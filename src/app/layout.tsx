@@ -16,7 +16,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             src="/bg.jpg"
             alt=""
             className="bg-fixed-image"
-            style={{ filter: 'brightness(0.75) saturate(1.1) contrast(1.05)' }}
+            style={{ filter: 'brightness(1.25) saturate(1.05) contrast(1.0)' }}
           />
           {/* Subtle dark overlay */}
           <div className="absolute inset-0" style={{

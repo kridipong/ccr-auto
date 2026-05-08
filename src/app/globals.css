@@ -2,11 +2,11 @@
 @import "tailwindcss";
 
 :root {
-  --glass-bg: rgba(255, 255, 255, 0.12);
-  --glass-border: rgba(255, 255, 255, 0.18);
-  --glass-hover: rgba(255, 255, 255, 0.2);
-  --glass-card: rgba(255, 255, 255, 0.1);  /* ~50% transparent (10% opaque) */
-  --glass-card-hover: rgba(255, 255, 255, 0.18);
+  --glass-bg: rgba(255, 255, 255, 0.5);
+  --glass-border: rgba(255, 255, 255, 0.55);
+  --glass-hover: rgba(255, 255, 255, 0.6);
+  --glass-card: rgba(255, 255, 255, 0.5);  /* 50% opaque = 50% transparency */
+  --glass-card-hover: rgba(255, 255, 255, 0.6);
   --text-primary: rgba(255, 255, 255, 0.95);
   --text-secondary: rgba(255, 255, 255, 0.7);
   --text-muted: rgba(255, 255, 255, 0.5);
@@ -35,15 +35,15 @@ body {
 /* Glass base */
 .glass {
   background: var(--glass-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--glass-border);
 }
 
 .glass-card {
   background: var(--glass-card);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid var(--glass-border);
   box-shadow: var(--shadow-glass);
   transition: all 0.3s ease;
@@ -102,7 +102,7 @@ body {
 }
 
 .glass-input {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(12px);
   border: 1px solid var(--glass-border);
   color: white;
