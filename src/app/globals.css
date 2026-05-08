@@ -1,10 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Bitcount+Grid+Double+Ink&display=swap');
 @import "tailwindcss";
 
 :root {
-  --glass-bg: rgba(255, 255, 255, 0.08);
-  --glass-border: rgba(255, 255, 255, 0.15);
-  --glass-hover: rgba(255, 255, 255, 0.15);
-  --glass-card: rgba(255, 255, 255, 0.1);
+  --glass-bg: rgba(255, 255, 255, 0.12);
+  --glass-border: rgba(255, 255, 255, 0.18);
+  --glass-hover: rgba(255, 255, 255, 0.2);
+  --glass-card: rgba(255, 255, 255, 0.1);  /* ~50% transparent (10% opaque) */
   --glass-card-hover: rgba(255, 255, 255, 0.18);
   --text-primary: rgba(255, 255, 255, 0.95);
   --text-secondary: rgba(255, 255, 255, 0.7);
@@ -16,10 +17,9 @@
   --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
-/* Fixed background */
 body {
   margin: 0;
-  font-family: 'Prompt', 'IBM Plex Sans Thai', system-ui, -apple-system, sans-serif;
+  font-family: 'Bitcount Grid Double Ink', 'Prompt', 'IBM Plex Sans Thai', system-ui, sans-serif;
 }
 
 .bg-fixed-image {
@@ -32,18 +32,18 @@ body {
   object-fit: cover;
 }
 
-/* Glass base class */
+/* Glass base */
 .glass {
   background: var(--glass-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--glass-border);
 }
 
 .glass-card {
   background: var(--glass-card);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border: 1px solid var(--glass-border);
   box-shadow: var(--shadow-glass);
   transition: all 0.3s ease;
@@ -54,25 +54,19 @@ body {
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
 }
 
-/* Sci-fi glowing text */
+/* Sci-fi glow */
 .glow-text {
   text-shadow: 0 0 20px var(--accent-glow), 0 0 40px var(--accent-glow), 0 0 80px var(--accent-glow);
-}
-
-.glow-text-accent {
-  text-shadow: 0 0 20px var(--accent2-glow), 0 0 40px var(--accent2-glow);
 }
 
 .glow-border {
   box-shadow: 0 0 15px var(--accent-glow), inset 0 0 15px rgba(0, 212, 255, 0.05);
 }
 
-/* Typography */
 .text-glass { color: var(--text-primary); }
 .text-glass-secondary { color: var(--text-secondary); }
 .text-glass-muted { color: var(--text-muted); }
 
-/* Buttons */
 .btn-glass {
   background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(0, 212, 255, 0.1));
   border: 1px solid var(--accent);
@@ -83,7 +77,6 @@ body {
   cursor: pointer;
   backdrop-filter: blur(10px);
   transition: all 0.3s;
-  text-shadow: 0 0 10px var(--accent-glow);
 }
 .btn-glass:hover {
   background: linear-gradient(135deg, rgba(0, 212, 255, 0.3), rgba(0, 212, 255, 0.2));
@@ -108,7 +101,6 @@ body {
   transform: translateY(-1px);
 }
 
-/* Glass select/input */
 .glass-input {
   background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(12px);
@@ -129,20 +121,17 @@ body {
   color: white;
 }
 
-/* Layout wrapper */
 .page-wrapper {
   position: relative;
   min-height: 100vh;
   z-index: 1;
 }
 
-/* Glass divider */
 .glass-divider {
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
 }
 
-/* Animated gradient accent line */
 .accent-line {
   height: 2px;
   background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent));
@@ -155,26 +144,6 @@ body {
   50% { background-position: 100% 50%; }
 }
 
-/* Loading state */
-.glass-skeleton {
-  background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-  border-radius: 0.5rem;
-}
-
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
-
-/* Sci-fi corner decoration */
 .corner-decoration {
   position: absolute;
   width: 30px;
@@ -186,3 +155,14 @@ body {
 .corner-tr { top: 0; right: 0; border-top: 2px solid; border-right: 2px solid; }
 .corner-bl { bottom: 0; left: 0; border-bottom: 2px solid; border-left: 2px solid; }
 .corner-br { bottom: 0; right: 0; border-bottom: 2px solid; border-right: 2px solid; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+
+/* Bitcount font specific */
+.sci-fi-title {
+  font-family: 'Bitcount Grid Double Ink', monospace;
+  letter-spacing: 0.05em;
+}
