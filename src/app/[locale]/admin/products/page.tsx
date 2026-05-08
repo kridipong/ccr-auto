@@ -6,7 +6,7 @@ import { useLocale } from '@/lib/i18n/locale-provider'
 import { t } from '@/lib/i18n'
 import { createClient } from '@/lib/supabase/client'
 import type { Product } from '@/lib/types'
-import { Plus, Edit, Trash2, Search } from 'lucide-react'
+import { Plus, Edit, Trash2, Search, Upload } from 'lucide-react'
 
 const supabase = createClient()
 
@@ -62,6 +62,12 @@ export default function AdminProducts() {
           className="flex items-center gap-1 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700"
         >
           <Plus size={16} /> {t('admin.product_add', locale)}
+        </Link>
+        <Link
+          href={`/${locale}/admin/products/import`}
+          className="flex items-center gap-1 bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700"
+        >
+          <Upload size={16} /> {locale === 'th' ? 'นำเข้า' : 'Import'}
         </Link>
       </div>
 
