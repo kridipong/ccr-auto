@@ -1,11 +1,134 @@
 @import "tailwindcss";
 
 :root {
-  --primary: #2563eb;
-  --primary-dark: #1d4ed8;
-  --accent: #f59e0b;
+  --primary: #1a1a2e;
+  --primary-light: #2d2d4e;
+  --accent: #e63946;
+  --accent-hover: #c1121f;
+  --secondary: #457b9d;
+  --bg: #f8f9fa;
+  --bg-card: #ffffff;
+  --text: #1a1a2e;
+  --text-muted: #6c757d;
+  --border: #dee2e6;
+  --success: #2d6a4f;
+  --warning: #ffb703;
 }
 
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #a1a1a1; }
+
 body {
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: 'Prompt', 'IBM Plex Sans Thai', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Smooth transitions */
+* { transition: background-color 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s; }
+
+/* Product card hover */
+.product-card {
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+}
+
+/* Button styles */
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+}
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(26,26,46,0.3);
+}
+
+.btn-accent {
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+}
+.btn-accent:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(230,57,70,0.3);
+}
+
+/* Card style */
+.card {
+  background: var(--bg-card);
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  padding: 1.25rem;
+}
+.card-shadow {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.card-shadow:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* Input styling */
+input, select, textarea {
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.625rem 0.875rem;
+  outline: none;
+  font-size: 0.875rem;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--secondary);
+  ring: 2px solid rgba(69,123,157,0.2);
+}
+
+/* Hero gradient */
+.hero-gradient {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+}
+
+/* Headers in Thai */
+.thai-header {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* Footer */
+.footer-gradient {
+  background: linear-gradient(135deg, #1a1a2e, #0f3460);
+}
+
+/* Animation for cart badge */
+@keyframes pulse-badge {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+.cart-badge {
+  animation: pulse-badge 0.3s ease-in-out;
+}
+
+/* Loading skeleton */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 0.5rem;
 }
