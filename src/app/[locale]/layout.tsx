@@ -15,7 +15,7 @@ export default async function LocaleLayout({
   return (
     <LocaleProviderClient initialLocale={locale}>
       <CartProvider>
-        <div className="min-h-screen flex flex-col bg-gray-50">
+        <div className="page-wrapper">
           <Header />
           <main className="flex-1">{children}</main>
           <Footer />

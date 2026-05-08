@@ -23,7 +23,6 @@ export default function ProductsPage() {
   const [search, setSearch] = useState('')
   const [showFilters, setShowFilters] = useState(false)
 
-  // Filters
   const [selectedMake, setSelectedMake] = useState(searchParams.get('make') || '')
   const [selectedModel, setSelectedModel] = useState(searchParams.get('model') || '')
   const [selectedCategory, setSelectedCategory] = useState('')
@@ -52,21 +51,16 @@ export default function ProductsPage() {
     setLoading(true)
     let query = supabase.from('products').select('*').eq('is_active', true)
 
-    if (selectedCategory) {
-      query = query.eq('category_id', selectedCategory)
-    }
-    if (search) {
-      query = query.or(`name_th.ilike.%${search}%,name_en.ilike.%${search}%,sku.ilike.%${search}%`)
-    }
+    if (selectedCategory) query = query.eq('category_id', selectedCategory)
+    if (search) query = query.or(`name_th.ilike.%${search}%,name_en.ilike.%${search}%,sku.ilike.%${search}%`)
+
     if (selectedMake || selectedModel) {
-      // Products with fitment filtering
       let fitQuery = supabase.from('product_fitments').select('product_id')
       if (selectedMake) fitQuery = fitQuery.eq('make_id', selectedMake)
       if (selectedModel) fitQuery = fitQuery.eq('model_id', selectedModel)
-
       fitQuery.then(({ data: fitData }) => {
         if (fitData && fitData.length > 0) {
-          const ids = fitData.map(f => f.product_id)
+          const ids = [...new Set(fitData.map(f => f.product_id))]
           query.in('id', ids).then(({ data }) => {
             if (data) setProducts(data)
             setLoading(false)
@@ -86,52 +80,49 @@ export default function ProductsPage() {
   }, [selectedMake, selectedModel, selectedCategory, search])
 
   const clearFilters = () => {
-    setSelectedMake('')
-    setSelectedModel('')
-    setSelectedCategory('')
-    setSearch('')
+    setSelectedMake(''); setSelectedModel(''); setSelectedCategory(''); setSearch('')
   }
-
   const hasFilters = selectedMake || selectedModel || selectedCategory || search
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">{t('products.all', locale)}</h1>
+      <h1 className="text-2xl font-bold text-glass mb-6">{t('products.all', locale)}</h1>
 
-      {/* Search & Filter bar */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="relative flex-1">
-          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-glass-muted" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t('products.search', locale)}
-            className="w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+            className="glass-input w-full pl-10"
           />
         </div>
         <button
           onClick={() => setShowFilters(!showFilters)}
-          className={`flex items-center gap-2 px-4 py-2.5 border rounded-lg transition ${
-            showFilters || hasFilters ? 'bg-blue-50 border-blue-300 text-blue-700' : 'text-gray-600'
-          }`}
+          className="glass-card px-4 py-2.5 rounded-xl text-sm transition-all"
+          style={showFilters || hasFilters ? {
+            background: 'rgba(0,212,255,0.15)',
+            borderColor: '#00d4ff',
+            color: '#00d4ff',
+          } : { color: 'rgba(255,255,255,0.7)' }}
         >
-          <SlidersHorizontal size={18} />
-          {t('vehicle.select', locale)}
+          <div className="flex items-center gap-2">
+            <SlidersHorizontal size={18} />
+            {t('vehicle.select', locale)}
+          </div>
         </button>
       </div>
 
-      {/* Filter panel */}
       {showFilters && (
-        <div className="bg-white border rounded-xl p-4 mb-6">
+        <div className="glass rounded-xl p-4 mb-6">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="text-sm text-gray-500 mb-1 block">{t('vehicle.make', locale)}</label>
-              <select
-                value={selectedMake}
+              <label className="text-xs text-glass-secondary mb-1 block">{t('vehicle.make', locale)}</label>
+              <select value={selectedMake}
                 onChange={(e) => { setSelectedMake(e.target.value); setSelectedModel('') }}
-                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-              >
+                className="glass-input w-full">
                 <option value="">-- {t('vehicle.make', locale)} --</option>
                 {makes.map((m) => (
                   <option key={m.id} value={m.id}>{locale === 'th' ? (m.name_th || m.name_en) : m.name_en}</option>
@@ -139,13 +130,9 @@ export default function ProductsPage() {
               </select>
             </div>
             <div>
-              <label className="text-sm text-gray-500 mb-1 block">{t('vehicle.model', locale)}</label>
-              <select
-                value={selectedModel}
-                onChange={(e) => setSelectedModel(e.target.value)}
-                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                disabled={!selectedMake}
-              >
+              <label className="text-xs text-glass-secondary mb-1 block">{t('vehicle.model', locale)}</label>
+              <select value={selectedModel} onChange={(e) => setSelectedModel(e.target.value)}
+                className="glass-input w-full" disabled={!selectedMake}>
                 <option value="">-- {t('vehicle.model', locale)} --</option>
                 {models.map((m) => (
                   <option key={m.id} value={m.id}>{m.name} ({m.year_start}{m.year_end ? `-${m.year_end}` : '+'})</option>
@@ -153,12 +140,9 @@ export default function ProductsPage() {
               </select>
             </div>
             <div>
-              <label className="text-sm text-gray-500 mb-1 block">{t('products.category', locale)}</label>
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-              >
+              <label className="text-xs text-glass-secondary mb-1 block">{t('products.category', locale)}</label>
+              <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}
+                className="glass-input w-full">
                 <option value="">{locale === 'th' ? 'ทั้งหมด' : 'All'}</option>
                 {categories.map((c) => (
                   <option key={c.id} value={c.id}>{locale === 'th' ? c.name_th : c.name_en}</option>
@@ -167,18 +151,17 @@ export default function ProductsPage() {
             </div>
           </div>
           {hasFilters && (
-            <button onClick={clearFilters} className="mt-3 text-sm text-red-500 hover:underline flex items-center gap-1">
+            <button onClick={clearFilters} className="mt-3 text-xs text-glass-muted hover:text-white flex items-center gap-1 transition">
               <X size={14} /> {t('vehicle.clear', locale)}
             </button>
           )}
         </div>
       )}
 
-      {/* Products grid */}
       {loading ? (
-        <div className="text-center py-12 text-gray-400">{t('common.loading', locale)}</div>
+        <div className="text-center py-12 text-glass-muted">{t('common.loading', locale)}</div>
       ) : products.length === 0 ? (
-        <div className="text-center py-12 text-gray-400">{t('products.no_results', locale)}</div>
+        <div className="text-center py-12 text-glass-muted">{t('products.no_results', locale)}</div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {products.map((product) => (
