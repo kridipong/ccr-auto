@@ -15,6 +15,16 @@ export interface Model {
   created_at: string
 }
 
+export interface Brand {
+  id: string
+  name_th: string
+  name_en: string
+  slug: string
+  logo_url: string | null
+  description: string | null
+  created_at: string
+}
+
 export interface Category {
   id: string
   name_th: string
@@ -35,6 +45,7 @@ export interface Product {
   compare_price: number | null
   stock: number
   category_id: string
+  brand_id: string | null
   images: string[]
   is_active: boolean
   created_at: string

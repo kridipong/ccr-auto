@@ -3,12 +3,13 @@
 import Link from 'next/link'
 import { useLocale } from '@/lib/i18n/locale-provider'
 import { t } from '@/lib/i18n'
-import { Package, Tags, Car, ShoppingBag, LayoutDashboard, ArrowLeft, Upload } from 'lucide-react'
+import { Package, Tags, Car, ShoppingBag, LayoutDashboard, ArrowLeft, Upload, Award } from 'lucide-react'
 
 const adminLinks = (locale: string) => [
   { href: `/${locale}/admin`, icon: LayoutDashboard, label_en: 'Dashboard', label_th: 'ภาพรวม' },
   { href: `/${locale}/admin/products`, icon: Package, label_en: 'Products', label_th: 'สินค้า' },
   { href: `/${locale}/admin/products/import`, icon: Upload, label_en: 'Import', label_th: 'นำเข้า' },
+  { href: `/${locale}/admin/brands`, icon: Award, label_en: 'Brands', label_th: 'แบรนด์' },
   { href: `/${locale}/admin/categories`, icon: Tags, label_en: 'Categories', label_th: 'หมวดหมู่' },
   { href: `/${locale}/admin/vehicles`, icon: Car, label_en: 'Vehicles', label_th: 'รถยนต์' },
   { href: `/${locale}/admin/orders`, icon: ShoppingBag, label_en: 'Orders', label_th: 'คำสั่งซื้อ' },

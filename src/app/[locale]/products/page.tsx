@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { useLocale } from '@/lib/i18n/locale-provider'
 import { t } from '@/lib/i18n'
 import { createClient } from '@/lib/supabase/client'
-import type { Make, Model, Category, Product } from '@/lib/types'
+import type { Make, Model, Category, Brand, Product } from '@/lib/types'
 import ProductCard from '@/components/products/ProductCard'
 import { Search, SlidersHorizontal, X } from 'lucide-react'
 
@@ -18,6 +18,7 @@ export default function ProductsPage() {
   const [makes, setMakes] = useState<Make[]>([])
   const [models, setModels] = useState<Model[]>([])
   const [categories, setCategories] = useState<Category[]>([])
+  const [brands, setBrands] = useState<Brand[]>([])
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -26,14 +27,17 @@ export default function ProductsPage() {
   const [selectedMake, setSelectedMake] = useState(searchParams.get('make') || '')
   const [selectedModel, setSelectedModel] = useState(searchParams.get('model') || '')
   const [selectedCategory, setSelectedCategory] = useState('')
+  const [selectedBrand, setSelectedBrand] = useState(searchParams.get('brand') || '')
 
   useEffect(() => {
     Promise.all([
       supabase.from('makes').select('*').order('name_en'),
       supabase.from('categories').select('*').order('name_en'),
-    ]).then(([makesRes, catsRes]) => {
+      supabase.from('brands').select('*').order('name_en'),
+    ]).then(([makesRes, catsRes, brandsRes]) => {
       if (makesRes.data) setMakes(makesRes.data)
       if (catsRes.data) setCategories(catsRes.data)
+      if (brandsRes.data) setBrands(brandsRes.data)
     })
   }, [])
 
@@ -52,6 +56,7 @@ export default function ProductsPage() {
     let query = supabase.from('products').select('*').eq('is_active', true)
 
     if (selectedCategory) query = query.eq('category_id', selectedCategory)
+    if (selectedBrand) query = query.eq('brand_id', selectedBrand)
     if (search) query = query.or(`name_th.ilike.%${search}%,name_en.ilike.%${search}%,sku.ilike.%${search}%`)
 
     if (selectedMake || selectedModel) {
@@ -80,9 +85,9 @@ export default function ProductsPage() {
   }, [selectedMake, selectedModel, selectedCategory, search])
 
   const clearFilters = () => {
-    setSelectedMake(''); setSelectedModel(''); setSelectedCategory(''); setSearch('')
+    setSelectedMake(''); setSelectedModel(''); setSelectedCategory(''); setSelectedBrand(''); setSearch('')
   }
-  const hasFilters = selectedMake || selectedModel || selectedCategory || search
+  const hasFilters = selectedMake || selectedModel || selectedCategory || selectedBrand || search
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
@@ -117,7 +122,7 @@ export default function ProductsPage() {
 
       {showFilters && (
         <div className="glass rounded-xl p-4 mb-6">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div>
               <label className="text-xs text-glass-secondary mb-1 block">{t('vehicle.make', locale)}</label>
               <select value={selectedMake}
@@ -136,6 +141,16 @@ export default function ProductsPage() {
                 <option value="">-- {t('vehicle.model', locale)} --</option>
                 {models.map((m) => (
                   <option key={m.id} value={m.id}>{m.name} ({m.year_start}{m.year_end ? `-${m.year_end}` : '+'})</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-xs text-glass-secondary mb-1 block">{locale === 'th' ? 'แบรนด์' : 'Brand'}</label>
+              <select value={selectedBrand} onChange={(e) => setSelectedBrand(e.target.value)}
+                className="glass-input w-full">
+                <option value="">{locale === 'th' ? 'ทั้งหมด' : 'All'}</option>
+                {brands.map((b) => (
+                  <option key={b.id} value={b.id}>{locale === 'th' ? (b.name_th || b.name_en) : b.name_en}</option>
                 ))}
               </select>
             </div>

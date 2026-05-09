@@ -83,5 +83,21 @@ CREATE INDEX idx_fitments_product ON product_fitments(product_id);
 CREATE INDEX idx_models_make ON models(make_id);
 CREATE INDEX idx_orders_status ON orders(status);
 
--- STORAGE BUCKET for product images
+-- BRANDS
+CREATE TABLE brands (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  name_th TEXT NOT NULL,
+  name_en TEXT NOT NULL,
+  slug TEXT NOT NULL UNIQUE,
+  logo_url TEXT,
+  description TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Add brand_id to products
+ALTER TABLE products ADD COLUMN brand_id UUID REFERENCES brands(id);
+CREATE INDEX idx_products_brand ON products(brand_id);
+
+-- STORAGE BUCKETS
 INSERT INTO storage.buckets (id, name, public) VALUES ('product-images', 'product-images', true);
+INSERT INTO storage.buckets (id, name, public) VALUES ('brand-logos', 'brand-logos', true);

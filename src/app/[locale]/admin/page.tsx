@@ -4,13 +4,13 @@ import { useEffect, useState } from 'react'
 import { useLocale } from '@/lib/i18n/locale-provider'
 import { t } from '@/lib/i18n'
 import { createClient } from '@/lib/supabase/client'
-import { Package, ShoppingBag, Car, Tags } from 'lucide-react'
+import { Package, ShoppingBag, Car, Tags, Award } from 'lucide-react'
 
 const supabase = createClient()
 
 export default function AdminDashboard() {
   const { locale } = useLocale()
-  const [stats, setStats] = useState({ products: 0, orders: 0, makes: 0, categories: 0 })
+  const [stats, setStats] = useState({ products: 0, orders: 0, makes: 0, categories: 0, brands: 0 })
   const [recentOrders, setRecentOrders] = useState<any[]>([])
 
   useEffect(() => {
@@ -19,12 +19,14 @@ export default function AdminDashboard() {
       supabase.from('orders').select('*', { count: 'exact', head: true }),
       supabase.from('makes').select('*', { count: 'exact', head: true }),
       supabase.from('categories').select('*', { count: 'exact', head: true }),
-    ]).then(([p, o, m, c]) => {
+      supabase.from('brands').select('*', { count: 'exact', head: true }),
+    ]).then(([p, o, m, c, b]) => {
       setStats({
         products: p.count || 0,
         orders: o.count || 0,
         makes: m.count || 0,
         categories: c.count || 0,
+        brands: b.count || 0,
       })
     })
 
@@ -36,6 +38,7 @@ export default function AdminDashboard() {
   const cards = [
     { icon: Package, label: t('admin.products', locale), value: stats.products, color: 'bg-blue-500' },
     { icon: ShoppingBag, label: t('admin.orders', locale), value: stats.orders, color: 'bg-green-500' },
+    { icon: Award, label: locale === 'th' ? 'แบรนด์' : 'Brands', value: stats.brands, color: 'bg-pink-500' },
     { icon: Car, label: t('admin.vehicles', locale), value: stats.makes, color: 'bg-purple-500' },
     { icon: Tags, label: t('admin.categories', locale), value: stats.categories, color: 'bg-orange-500' },
   ]

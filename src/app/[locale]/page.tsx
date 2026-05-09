@@ -5,8 +5,8 @@ import Link from 'next/link'
 import { useLocale } from '@/lib/i18n/locale-provider'
 import { t } from '@/lib/i18n'
 import { createClient } from '@/lib/supabase/client'
-import type { Make, Model, Product } from '@/lib/types'
-import { Search, Car, ArrowRight, Truck, Shield, RotateCcw } from 'lucide-react'
+import type { Make, Model, Brand, Product } from '@/lib/types'
+import { Search, Car, ArrowRight, Truck, Shield, RotateCcw, Award } from 'lucide-react'
 import ProductCard from '@/components/products/ProductCard'
 
 const supabase = createClient()
@@ -17,11 +17,15 @@ export default function HomePage() {
   const [models, setModels] = useState<Model[]>([])
   const [selectedMake, setSelectedMake] = useState('')
   const [selectedModel, setSelectedModel] = useState('')
+  const [brands, setBrands] = useState<Brand[]>([])
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([])
 
   useEffect(() => {
     supabase.from('makes').select('*').order('name_en').then(({ data }) => {
       if (data) setMakes(data)
+    })
+    supabase.from('brands').select('*').order('name_en').then(({ data }) => {
+      if (data) setBrands(data)
     })
     supabase.from('products').select('*').eq('is_active', true).limit(8).then(({ data }) => {
       if (data) setFeaturedProducts(data)
@@ -148,6 +152,50 @@ export default function HomePage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {featuredProducts.map((product) => (
               <ProductCard key={product.id} product={product} locale={locale} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Brands */}
+      {brands.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 py-12">
+          <div className="text-center mb-8">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Award size={20} style={{ color: '#ff3366' }} />
+              <h2 className="text-xl md:text-2xl font-bold text-glass sci-fi-title tracking-wider">
+                {locale === 'th' ? 'แบรนด์ชั้นนำ' : 'TRUSTED BRANDS'}
+              </h2>
+            </div>
+            <p className="text-sm text-glass-muted">
+              {locale === 'th' ? 'อะไหล่แท้จากแบรนด์คุณภาพ' : 'Quality parts from top brands'}
+            </p>
+          </div>
+          <div className="flex flex-wrap justify-center gap-6">
+            {brands.map((b) => (
+              <Link
+                key={b.id}
+                href={`/${locale}/products?brand=${b.id}`}
+                className="glass-card px-6 py-5 rounded-xl transition-all hover:translate-y-[-3px] flex flex-col items-center gap-3 min-w-[130px] group"
+                onMouseOver={(e) => { e.currentTarget.style.borderColor = '#00d4ff'; e.currentTarget.style.boxShadow = '0 0 25px rgba(0,212,255,0.2)'; }}
+                onMouseOut={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; e.currentTarget.style.boxShadow = 'none'; }}
+              >
+                {b.logo_url ? (
+                  <img
+                    src={b.logo_url}
+                    alt={b.name_en}
+                    className="h-14 w-auto object-contain group-hover:scale-110 transition-transform duration-300"
+                  />
+                ) : (
+                  <div className="h-14 w-14 rounded-full flex items-center justify-center text-lg font-bold"
+                    style={{ background: 'rgba(0,212,255,0.1)', color: '#00d4ff' }}>
+                    {b.name_en?.charAt(0)}
+                  </div>
+                )}
+                <span className="text-xs text-glass-muted sci-fi-title tracking-wider uppercase group-hover:text-white transition-colors">
+                  {locale === 'th' ? (b.name_th || b.name_en) : b.name_en}
+                </span>
+              </Link>
             ))}
           </div>
         </section>

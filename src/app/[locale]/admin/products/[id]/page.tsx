@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { useLocale } from '@/lib/i18n/locale-provider'
 import { t } from '@/lib/i18n'
 import { createClient } from '@/lib/supabase/client'
-import type { Make, Model, Category, Product } from '@/lib/types'
+import type { Make, Model, Category, Brand, Product } from '@/lib/types'
 import { Upload, Plus, X } from 'lucide-react'
 
 const supabase = createClient()
@@ -27,13 +27,14 @@ export default function ProductForm() {
   const [makes, setMakes] = useState<Make[]>([])
   const [models, setModels] = useState<{ [key: string]: Model[] }>({})
   const [categories, setCategories] = useState<Category[]>([])
+  const [brands, setBrands] = useState<Brand[]>([])
   const [saving, setSaving] = useState(false)
 
   const [form, setForm] = useState({
     sku: '', name_th: '', name_en: '',
     description_th: '', description_en: '',
     price: '', compare_price: '', stock: '0',
-    category_id: '', is_active: true,
+    category_id: '', brand_id: '', is_active: true,
   })
   const [fitments, setFitments] = useState<FitmentRow[]>([])
   const [images, setImages] = useState<string[]>([])
@@ -42,9 +43,11 @@ export default function ProductForm() {
     Promise.all([
       supabase.from('makes').select('*').order('name_en'),
       supabase.from('categories').select('*').order('name_en'),
-    ]).then(([m, c]) => {
+      supabase.from('brands').select('*').order('name_en'),
+    ]).then(([m, c, b]) => {
       if (m.data) setMakes(m.data)
       if (c.data) setCategories(c.data)
+      if (b.data) setBrands(b.data)
     })
 
     if (!isNew) {
@@ -60,6 +63,7 @@ export default function ProductForm() {
             compare_price: data.compare_price ? String(data.compare_price) : '',
             stock: String(data.stock),
             category_id: data.category_id || '',
+            brand_id: data.brand_id || '',
             is_active: data.is_active,
           })
           setImages(data.images || [])
@@ -134,6 +138,7 @@ export default function ProductForm() {
       compare_price: form.compare_price ? parseFloat(form.compare_price) : null,
       stock: parseInt(form.stock),
       category_id: form.category_id || null,
+      brand_id: form.brand_id || null,
       images,
       is_active: form.is_active,
     }
@@ -165,6 +170,19 @@ export default function ProductForm() {
   return (
     <form onSubmit={handleSubmit} className="max-w-4xl">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div>
+          <label className="text-sm text-gray-500 mb-1 block">{locale === 'th' ? 'แบรนด์' : 'Brand'}</label>
+          <select
+            value={form.brand_id}
+            onChange={(e) => setForm({ ...form, brand_id: e.target.value })}
+            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+          >
+            <option value="">{locale === 'th' ? 'ไม่มีแบรนด์' : 'No Brand'}</option>
+            {brands.map((b) => (
+              <option key={b.id} value={b.id}>{locale === 'th' ? (b.name_th || b.name_en) : b.name_en}</option>
+            ))}
+          </select>
+        </div>
         <div>
           <label className="text-sm text-gray-500 mb-1 block">SKU *</label>
           <input

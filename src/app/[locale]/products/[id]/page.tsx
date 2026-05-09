@@ -7,8 +7,8 @@ import { useLocale } from '@/lib/i18n/locale-provider'
 import { t } from '@/lib/i18n'
 import { useCart } from '@/lib/cart-context'
 import { createClient } from '@/lib/supabase/client'
-import type { Product, ProductFitment, Category } from '@/lib/types'
-import { ShoppingCart, ArrowLeft, Check, ChevronLeft, ChevronRight } from 'lucide-react'
+import type { Product, ProductFitment, Category, Brand } from '@/lib/types'
+import { ShoppingCart, ArrowLeft, Check, ChevronLeft, ChevronRight, Award } from 'lucide-react'
 
 const supabase = createClient()
 
@@ -17,6 +17,7 @@ export default function ProductDetailPage() {
   const params = useParams()
   const { addItem } = useCart()
   const [product, setProduct] = useState<Product | null>(null)
+  const [brand, setBrand] = useState<Brand | null>(null)
   const [fitments, setFitments] = useState<(ProductFitment & { make_name?: string; model_name?: string })[]>([])
   const [category, setCategory] = useState<Category | null>(null)
   const [currentImage, setCurrentImage] = useState(0)
@@ -27,6 +28,11 @@ export default function ProductDetailPage() {
     supabase.from('products').select('*').eq('id', params.id).single().then(({ data }) => {
       if (data) {
         setProduct(data)
+        if (data.brand_id) {
+          supabase.from('brands').select('*').eq('id', data.brand_id).single().then(({ data: brandData }) => {
+            if (brandData) setBrand(brandData)
+          })
+        }
         if (data.category_id) {
           supabase.from('categories').select('*').eq('id', data.category_id).single().then(({ data: cat }) => {
             if (cat) setCategory(cat)
@@ -89,13 +95,34 @@ export default function ProductDetailPage() {
 
         <div className="glass-card rounded-xl p-6">
           <p className="text-xs text-glass-muted mb-1 font-mono">{product.sku}</p>
-          {category && (
-            <Link href={`/${locale}/products?category=${category.id}`}
-              className="text-xs transition" style={{ color: '#00d4ff' }}>
-              {locale === 'th' ? category.name_th : category.name_en}
-            </Link>
-          )}
-          <h1 className="text-2xl font-bold text-glass mt-2 mb-4">{name}</h1>
+          <div className="flex items-center gap-3 mb-2">
+            {brand && (
+              <Link href={`/${locale}/products?brand=${brand.id}`}
+                className="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full transition-all"
+                style={{
+                  background: 'rgba(0,212,255,0.1)',
+                  color: '#00d4ff',
+                  border: '1px solid rgba(0,212,255,0.2)',
+                }}
+                onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(0,212,255,0.2)'; e.currentTarget.style.boxShadow = '0 0 15px rgba(0,212,255,0.3)'; }}
+                onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(0,212,255,0.1)'; e.currentTarget.style.boxShadow = 'none'; }}
+              >
+                {brand.logo_url ? (
+                  <img src={brand.logo_url} alt={brand.name_en} className="h-4 w-auto" />
+                ) : (
+                  <Award size={14} />
+                )}
+                <span>{locale === 'th' ? (brand.name_th || brand.name_en) : brand.name_en}</span>
+              </Link>
+            )}
+            {category && (
+              <Link href={`/${locale}/products?category=${category.id}`}
+                className="text-xs transition" style={{ color: '#00d4ff' }}>
+                {locale === 'th' ? category.name_th : category.name_en}
+              </Link>
+            )}
+          </div>
+          <h1 className="text-2xl font-bold text-glass mt-1 mb-4">{name}</h1>
 
           <div className="flex items-baseline gap-3 mb-4">
             <span className="text-3xl font-bold" style={{ color: '#ff3366', textShadow: '0 0 15px rgba(255,51,102,0.3)' }}>
