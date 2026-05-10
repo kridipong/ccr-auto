@@ -6,7 +6,8 @@ import { useLocale } from '@/lib/i18n/locale-provider'
 import { t } from '@/lib/i18n'
 import { createClient } from '@/lib/supabase/client'
 import type { Make, Model, Category, Brand, Product } from '@/lib/types'
-import { Upload, Plus, X } from 'lucide-react'
+import { Upload, Plus, X, Loader } from 'lucide-react'
+import { uploadImages } from '@/lib/cloudinary'
 
 const supabase = createClient()
 
@@ -29,6 +30,7 @@ export default function ProductForm() {
   const [categories, setCategories] = useState<Category[]>([])
   const [brands, setBrands] = useState<Brand[]>([])
   const [saving, setSaving] = useState(false)
+  const [uploadingImages, setUploadingImages] = useState(false)
 
   const [form, setForm] = useState({
     sku: '', name_th: '', name_en: '',
@@ -109,15 +111,13 @@ export default function ProductForm() {
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (!files) return
-    for (const file of Array.from(files)) {
-      const { data } = await supabase.storage.from('product-images').upload(
-        `products/${Date.now()}-${file.name}`, file
-      )
-      if (data) {
-        const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/product-images/${data.path}`
-        setImages(prev => [...prev, url])
-      }
+    setUploadingImages(true)
+    const results = await uploadImages(Array.from(files))
+    setImages(prev => [...prev, ...results.map(r => r.url)])
+    if (results.length === 0) {
+      alert(locale === 'th' ? 'อัปโหลดรูปไม่สำเร็จ' : 'Image upload failed')
     }
+    setUploadingImages(false)
   }
 
   const removeImage = (index: number) => {
@@ -279,9 +279,10 @@ export default function ProductForm() {
             </div>
           ))}
         </div>
-        <label className="inline-flex items-center gap-2 px-4 py-2 border rounded-lg cursor-pointer text-sm text-gray-600 hover:bg-gray-50">
-          <Upload size={16} /> {locale === 'th' ? 'อัปโหลดรูป' : 'Upload Images'}
-          <input type="file" accept="image/*" multiple onChange={handleImageUpload} className="hidden" />
+        <label className={`inline-flex items-center gap-2 px-4 py-2 border rounded-lg cursor-pointer text-sm text-gray-600 hover:bg-gray-50 ${uploadingImages ? 'opacity-50 pointer-events-none' : ''}`}>
+          {uploadingImages ? <Loader size={16} className="animate-spin" /> : <Upload size={16} />}
+          {locale === 'th' ? 'อัปโหลดรูป' : 'Upload Images'}
+          <input type="file" accept="image/*" multiple onChange={handleImageUpload} className="hidden" disabled={uploadingImages} />
         </label>
       </div>
 
