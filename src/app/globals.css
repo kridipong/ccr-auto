@@ -1,181 +1,227 @@
-@import url('https://fonts.googleapis.com/css2?family=Bitcount+Grid+Double+Ink&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
+/* ════════════════════════════════════════════════
+   เจริญยนต์ × CCR AUTO — Automotive Industrial Theme
+   Racing Red · Graphite Gunmetal · Silver Precision
+   ════════════════════════════════════════════════ */
+
+@theme {
+  --color-racing-50: #fef2f2;
+  --color-racing-100: #fee2e2;
+  --color-racing-200: #fecaca;
+  --color-racing-300: #fca5a5;
+  --color-racing-400: #f87171;
+  --color-racing-500: #dc2626;
+  --color-racing-600: #b91c1c;
+  --color-racing-700: #991b1b;
+  --color-racing-800: #7f1d1d;
+  --color-racing-900: #450a0a;
+
+  --color-graphite-50: #f5f5f5;
+  --color-graphite-100: #e5e5e5;
+  --color-graphite-200: #d4d4d4;
+  --color-graphite-300: #a3a3a3;
+  --color-graphite-400: #737373;
+  --color-graphite-500: #404040;
+  --color-graphite-600: #262626;
+  --color-graphite-700: #1a1a1a;
+  --color-graphite-800: #171717;
+  --color-graphite-900: #0d0d0d;
+
+  --color-silver-50: #f8f9fa;
+  --color-silver-100: #f1f3f5;
+  --color-silver-200: #e9ecef;
+  --color-silver-300: #dee2e6;
+  --color-silver-400: #ced4da;
+  --color-silver-500: #adb5bd;
+  --color-silver-600: #868e96;
+  --color-silver-700: #495057;
+  --color-silver-800: #343a40;
+  --color-silver-900: #212529;
+
+  --font-thai: 'Noto Sans Thai', 'Prompt', system-ui, sans-serif;
+}
+
 :root {
-  --glass-bg: rgba(10, 15, 30, 0.75);
-  --glass-border: rgba(0, 212, 255, 0.15);
-  --glass-hover: rgba(10, 15, 30, 0.85);
-  --glass-card: rgba(10, 15, 30, 0.7);
-  --glass-card-hover: rgba(10, 15, 30, 0.82);
-  --text-primary: #ffffff;
-  --text-secondary: #e0e6ff;
-  --text-muted: #b0b8d4;
-  --accent: #00d4ff;
-  --accent-glow: rgba(0, 212, 255, 0.3);
-  --accent2: #ff3366;
-  --accent2-glow: rgba(255, 51, 102, 0.3);
-  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --racing: #dc2626;
+  --racing-hover: #b91c1c;
+  --racing-glow: rgba(220, 38, 38, 0.3);
+  --graphite-bg: #0d0d0d;
+  --graphite-card: #171717;
+  --graphite-border: #1a1a1a;
+  --graphite-soft: #f5f5f5;
+  --silver-text: #adb5bd;
+  --silver-muted: #868e96;
+  --white: #ffffff;
+  --surface: #f8f7f4;
+  --border-light: #e9ecef;
+  --shadow-card: 0 2px 12px rgba(0,0,0,0.06);
+  --shadow-hover: 0 8px 32px rgba(0,0,0,0.10);
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 9999px;
 }
 
 body {
   margin: 0;
-  font-family: 'Prompt', 'IBM Plex Sans Thai', system-ui, sans-serif;
+  font-family: 'Noto Sans Thai', 'Prompt', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color: var(--graphite-bg);
+  background: var(--surface);
 }
 
+/* ── Background image (fixed behind content) ── */
 .bg-fixed-image {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -2;
-  object-fit: cover;
+  display: none;
 }
 
-/* Glass base */
-.glass {
-  background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-}
-
+/* ── Cards ── */
 .glass-card {
-  background: var(--glass-card);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--shadow-glass);
-  transition: all 0.3s ease;
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  transition: all 0.2s ease;
 }
 .glass-card:hover {
-  background: var(--glass-card-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--racing);
 }
 
-/* Typography floor for glass panels */
-.glass p, .glass-card p,
-.glass span, .glass-card span,
-.glass div, .glass-card div {
-  font-size: min(14px, 0.875rem);
+/* Dark card variant */
+.glass-card-dark {
+  background: var(--graphite-card);
+  border: 1px solid var(--graphite-border);
+  border-radius: var(--radius);
+  transition: all 0.2s ease;
+}
+.glass-card-dark:hover {
+  transform: translateY(-3px);
+  border-color: rgba(220, 38, 38, 0.4);
 }
 
-/* Sci-fi font - titles only */
-.sci-fi-title {
-  font-family: 'Bitcount Grid Double Ink', monospace;
-  letter-spacing: 0.02em;
+/* ── Glass (header/footer) ── */
+.glass {
+  background: var(--graphite-bg);
+  border-bottom: 1px solid var(--graphite-border);
 }
 
-/* Glow effects */
-.glow-text {
-  text-shadow: 0 0 20px var(--accent-glow), 0 0 40px var(--accent-glow), 0 0 80px var(--accent-glow);
-}
+/* ── Typography helpers ── */
+.text-glass { color: var(--white); }
+.text-glass-secondary { color: var(--silver-text); }
+.text-glass-muted { color: var(--silver-muted); }
 
-.glow-border {
-  box-shadow: 0 0 15px var(--accent-glow), inset 0 0 15px rgba(0, 212, 255, 0.05);
-}
-
-.text-glass { color: var(--text-primary); }
-.text-glass-secondary { color: var(--text-secondary); }
-.text-glass-muted { color: var(--text-muted); }
-
-/* Buttons */
+/* ── Buttons ── */
 .btn-glass {
-  background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(0, 212, 255, 0.1));
-  border: 1px solid var(--accent);
-  color: white;
+  background: var(--racing);
+  color: var(--white);
   padding: 0.75rem 1.5rem;
-  border-radius: 0.75rem;
+  border-radius: var(--radius-pill);
   font-weight: 600;
   cursor: pointer;
-  backdrop-filter: blur(10px);
-  transition: all 0.3s;
+  transition: all 0.2s ease;
+  border: none;
+  font-family: inherit;
+  font-size: 0.9rem;
 }
 .btn-glass:hover {
-  background: linear-gradient(135deg, rgba(0, 212, 255, 0.35), rgba(0, 212, 255, 0.2));
-  box-shadow: 0 0 30px var(--accent-glow);
+  background: var(--racing-hover);
+  box-shadow: 0 0 25px var(--racing-glow);
   transform: translateY(-1px);
 }
 
-.btn-accent-glass {
-  background: linear-gradient(135deg, rgba(255, 51, 102, 0.3), rgba(255, 51, 102, 0.15));
-  border: 1px solid var(--accent2);
-  color: white;
+.btn-glass-outline {
+  background: transparent;
+  color: var(--silver-text);
+  border: 1px solid rgba(255,255,255,0.2);
   padding: 0.75rem 1.5rem;
-  border-radius: 0.75rem;
-  font-weight: 600;
+  border-radius: var(--radius-pill);
+  font-weight: 500;
   cursor: pointer;
-  backdrop-filter: blur(10px);
-  transition: all 0.3s;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  font-size: 0.9rem;
 }
-.btn-accent-glass:hover {
-  background: linear-gradient(135deg, rgba(255, 51, 102, 0.45), rgba(255, 51, 102, 0.25));
-  box-shadow: 0 0 30px var(--accent2-glow);
-  transform: translateY(-1px);
+.btn-glass-outline:hover {
+  border-color: var(--racing);
+  color: var(--white);
+  background: rgba(220, 38, 38, 0.1);
 }
 
-/* Dark inputs */
+/* ── Inputs ── */
 .glass-input {
-  background: rgba(10, 15, 30, 0.6);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(0, 212, 255, 0.25);
-  color: white;
-  border-radius: 0.75rem;
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  color: var(--graphite-bg);
+  border-radius: var(--radius);
   padding: 0.75rem 1rem;
   outline: none;
   font-size: 0.875rem;
-  font-family: 'Prompt', 'IBM Plex Sans Thai', sans-serif;
-  transition: all 0.3s;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  width: 100%;
 }
 .glass-input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 20px var(--accent-glow), inset 0 0 20px rgba(0, 212, 255, 0.05);
+  border-color: var(--racing);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
 }
 .glass-input option {
-  background: #0a0f1e;
-  color: white;
+  background: var(--white);
+  color: var(--graphite-bg);
 }
 .glass-input::placeholder {
-  color: var(--text-muted);
+  color: var(--silver-500);
 }
 
-/* Layout */
+/* ── Sci-fi title (removed) ── */
+.sci-fi-title {
+  /* Kept for compatibility — now uses standard bold */
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* ── Glow effects (replaced with racing glow) ── */
+.glow-text {
+  text-shadow: none;
+}
+
+.glow-border {
+  box-shadow: none;
+}
+
+/* ── Accent line (racing red) ── */
+.accent-line {
+  height: 2px;
+  background: var(--racing);
+}
+
+/* ── Engineering divider ── */
+.eng-divider {
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--racing), transparent);
+  border-radius: 2px;
+}
+
+/* ── Page wrapper ── */
 .page-wrapper {
   position: relative;
   min-height: 100vh;
   z-index: 1;
 }
 
-.accent-line {
-  height: 2px;
-  background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent));
-  background-size: 200% 100%;
-  animation: shimmer-gradient 3s ease infinite;
+/* ── Product card ── */
+.product-card-image {
+  aspect-ratio: 1;
+  object-fit: contain;
+  background: var(--silver-50);
 }
 
-@keyframes shimmer-gradient {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-
-.corner-decoration {
-  position: absolute;
-  width: 30px;
-  height: 30px;
-  border-color: var(--accent);
-  opacity: 0.6;
-}
-.corner-tl { top: 0; left: 0; border-top: 2px solid; border-left: 2px solid; }
-.corner-tr { top: 0; right: 0; border-top: 2px solid; border-right: 2px solid; }
-.corner-bl { bottom: 0; left: 0; border-bottom: 2px solid; border-left: 2px solid; }
-.corner-br { bottom: 0; right: 0; border-bottom: 2px solid; border-right: 2px solid; }
-
+/* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.25); }

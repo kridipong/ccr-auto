@@ -11,13 +11,13 @@ export default function ProductCard({ product, locale }: { product: Product; loc
   const img = product.images?.[0]
 
   return (
-    <div className="glass-card rounded-xl overflow-hidden group transition-all duration-300">
+    <div className="bg-white rounded-xl overflow-hidden group border border-silver-200 shadow-sm hover:shadow-lg hover:border-racing-400/30 transition-all duration-200">
       <Link href={`/${locale}/products/${product.id}`} className="block">
-        <div className="aspect-square overflow-hidden relative">
+        <div className="aspect-square overflow-hidden relative bg-silver-50">
           {img ? (
-            <img src={img} alt={name} className="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
+            <img src={img} alt={name} className="w-full h-full object-contain p-4 group-hover:scale-110 transition duration-500" />
           ) : (
-            <div className="w-full h-full flex items-center justify-center" style={{ color: 'rgba(255,255,255,0.2)' }}>
+            <div className="w-full h-full flex items-center justify-center text-silver-300">
               <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <rect x="3" y="3" width="18" height="18" rx="2" />
                 <circle cx="8.5" cy="8.5" r="1.5" />
@@ -25,32 +25,27 @@ export default function ProductCard({ product, locale }: { product: Product; loc
               </svg>
             </div>
           )}
-          {/* Overlay on hover */}
-          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-            style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.4), transparent)' }} />
-
           {product.compare_price && (
-            <span className="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded"
-              style={{ background: '#ff3366', color: 'white', boxShadow: '0 0 10px rgba(255,51,102,0.4)' }}>
+            <span className="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded bg-racing-600 text-white shadow-sm">
               -{Math.round((1 - Number(product.price) / Number(product.compare_price)) * 100)}%
             </span>
           )}
         </div>
       </Link>
       <div className="p-3">
-        <p className="text-[10px] font-mono text-glass-muted mb-1">{product.sku}</p>
+        <p className="text-[10px] text-silver-500 mb-1 font-mono">{product.sku}</p>
         <Link href={`/${locale}/products/${product.id}`}>
-          <h3 className="font-medium text-sm leading-snug mb-2 line-clamp-2 text-glass hover:glow-text transition-all">
+          <h3 className="font-medium text-sm leading-snug mb-2 line-clamp-2 text-graphite-900 hover:text-racing-600 transition-colors">
             {name}
           </h3>
         </Link>
         <div className="flex items-center justify-between">
           <div>
-            <span className="text-base font-bold" style={{ color: '#ff3366', textShadow: '0 0 10px rgba(255,51,102,0.3)' }}>
+            <span className="text-base font-bold text-racing-600">
               ฿{Number(product.price).toLocaleString()}
             </span>
             {product.compare_price && (
-              <span className="text-[10px] line-through ml-1.5 text-glass-muted">
+              <span className="text-[10px] line-through ml-1.5 text-silver-400">
                 ฿{Number(product.compare_price).toLocaleString()}
               </span>
             )}
@@ -65,22 +60,19 @@ export default function ProductCard({ product, locale }: { product: Product; loc
                 image: img || '',
                 quantity: 1,
               })}
-              className="p-2 rounded-lg transition-all"
-              style={{ background: 'rgba(0,212,255,0.1)', color: '#00d4ff' }}
-              onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(0,212,255,0.2)'; e.currentTarget.style.boxShadow = '0 0 15px rgba(0,212,255,0.3)'; }}
-              onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(0,212,255,0.1)'; e.currentTarget.style.boxShadow = 'none'; }}
+              className="p-2 rounded-lg bg-graphite-50 text-graphite-600 hover:bg-racing-600 hover:text-white transition-all"
             >
               <ShoppingCart size={15} />
             </button>
           )}
         </div>
         {product.stock === 0 && (
-          <p className="text-[11px] mt-1" style={{ color: '#ff3366' }}>
+          <p className="text-[11px] mt-1 text-racing-600 font-medium">
             {locale === 'th' ? 'สินค้าหมด' : 'Out of stock'}
           </p>
         )}
         {product.stock > 0 && product.stock <= 5 && (
-          <p className="text-[10px] mt-1" style={{ color: '#ff3366' }}>
+          <p className="text-[10px] mt-1 text-racing-500">
             {locale === 'th' ? `เหลือ ${product.stock} ชิ้น` : `Only ${product.stock} left`}
           </p>
         )}

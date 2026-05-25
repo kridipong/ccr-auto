@@ -22,10 +22,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <Link href={`/${locale}`} className="text-glass-muted hover:text-white transition">
+          <Link href={`/${locale}`} className="text-silver-500 hover:text-graphite-900 transition">
             <ArrowLeft size={20} />
           </Link>
-          <h1 className="text-2xl font-bold text-glass">{t('admin.title', locale)}</h1>
+          <h1 className="text-2xl font-bold text-graphite-900">{t('admin.title', locale)}</h1>
         </div>
       </div>
 
@@ -34,17 +34,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <Link
             key={link.href}
             href={link.href}
-            className="flex items-center gap-2 px-4 py-2 glass rounded-xl text-sm text-glass-secondary hover:text-white transition-all shrink-0"
-            onMouseOver={(e) => e.currentTarget.style.background = 'rgba(0,212,255,0.1)'}
-            onMouseOut={(e) => e.currentTarget.style.background = ''}
+            className="flex items-center gap-2 px-4 py-2 bg-white rounded-xl border border-silver-200 text-sm text-silver-600 hover:text-graphite-900 hover:border-racing-400/30 transition-all shrink-0"
           >
-            <link.icon size={16} style={{ color: '#00d4ff' }} />
+            <link.icon size={16} className="text-racing-500" />
             {locale === 'th' ? link.label_th : link.label_en}
           </Link>
         ))}
       </div>
 
-      <div className="glass rounded-xl p-6">
+      <div className="bg-white rounded-xl border border-silver-200 p-6 shadow-sm">
         {children}
       </div>
     </div>
