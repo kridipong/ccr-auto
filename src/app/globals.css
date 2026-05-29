@@ -73,9 +73,22 @@ body {
   background: var(--surface);
 }
 
-/* ── Background image (fixed behind content) ── */
-.bg-fixed-image {
-  display: none;
+/* ── Background image overlay (like landing page) ── */
+.bg-image-overlay {
+  position: relative;
+}
+.bg-image-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('/bg-hero.jpg') center/cover no-repeat;
+  opacity: 0.12;
+  pointer-events: none;
+  z-index: 0;
+}
+.bg-image-overlay > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* ── Cards ── */
@@ -224,4 +237,14 @@ body {
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 3px; }
+
+/* ── Marquee animation for variant names ── */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 15s linear infinite;
+  display: inline-block;
+}
 ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.25); }

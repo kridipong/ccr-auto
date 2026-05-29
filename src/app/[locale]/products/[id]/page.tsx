@@ -8,7 +8,7 @@ import { t } from '@/lib/i18n'
 import { useCart } from '@/lib/cart-context'
 import { createClient } from '@/lib/supabase/client'
 import type { Product, ProductFitment, Category, Brand } from '@/lib/types'
-import { ShoppingCart, ArrowLeft, Check, ChevronLeft, ChevronRight, Award } from 'lucide-react'
+import { ShoppingCart, ArrowLeft, Check, ChevronLeft, ChevronRight, Award, Layers, Package } from 'lucide-react'
 
 const supabase = createClient()
 
@@ -17,6 +17,8 @@ export default function ProductDetailPage() {
   const params = useParams()
   const { addItem } = useCart()
   const [product, setProduct] = useState<Product | null>(null)
+  const [variants, setVariants] = useState<Product[]>([])
+  const [selectedVariant, setSelectedVariant] = useState<Product | null>(null)
   const [brand, setBrand] = useState<Brand | null>(null)
   const [fitments, setFitments] = useState<(ProductFitment & { make_name?: string; model_name?: string })[]>([])
   const [category, setCategory] = useState<Category | null>(null)
@@ -38,6 +40,13 @@ export default function ProductDetailPage() {
             if (cat) setCategory(cat)
           })
         }
+        // Fetch variants if this is a parent product
+        supabase.from('products').select('*').eq('parent_product_id', data.id).eq('is_active', true).order('price').then(({ data: vars, error }) => {
+          if (error) console.error('Variant fetch error:', error)
+          if (vars && vars.length > 0) {
+            setVariants(vars)
+          }
+        })
         supabase.from('product_fitments').select('*').eq('product_id', data.id).then(async ({ data: fits }) => {
           if (fits && fits.length > 0) {
             const enriched = await Promise.all(fits.map(async (f) => {
@@ -61,9 +70,27 @@ export default function ProductDetailPage() {
   const name = locale === 'th' ? product.name_th : product.name_en
   const desc = locale === 'th' ? product.description_th : product.description_en
   const images = product.images?.length ? product.images : ['/logo.png']
+  const hasVariants = variants.length > 0
+  const activeProduct = selectedVariant || (hasVariants ? null : product)
+  const canAddToCart = !hasVariants || selectedVariant
+
+  const variantNames = hasVariants
+    ? variants.map(v => v.variant_label || (locale === 'th' ? v.name_th : v.name_en)).filter(Boolean)
+    : []
+
+  const priceDisplay: string = hasVariants && !selectedVariant
+    ? (() => {
+        const prices = variants.map(v => Number(v.price) || 0)
+        const minP = Math.min(...prices)
+        const maxP = Math.max(...prices)
+        return minP === maxP ? '฿' + minP.toLocaleString() : '฿' + minP.toLocaleString() + ' - ฿' + maxP.toLocaleString()
+      })()
+    : '฿' + ((activeProduct ? Number(activeProduct.price) : 0)).toLocaleString()
 
   const handleAdd = () => {
-    addItem({ product_id: product.id, name, sku: product.sku, price: Number(product.price), image: images[0], quantity })
+    if (!activeProduct) return
+    const pName = locale === 'th' ? activeProduct.name_th : activeProduct.name_en
+    addItem({ product_id: activeProduct.id, name: pName, sku: activeProduct.sku, price: Number(activeProduct.price), image: activeProduct.images?.[0] || images[0], quantity })
     setAdded(true)
     setTimeout(() => setAdded(false), 2000)
   }
@@ -121,20 +148,91 @@ export default function ProductDetailPage() {
                 {locale === 'th' ? category.name_th : category.name_en}
               </Link>
             )}
+            {hasVariants && (
+              <span className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(255,193,7,0.15)', color: '#ffc107' }}>
+                <Layers size={12} /> {variants.length} {locale === 'th' ? 'ตัวเลือก' : 'options'}
+              </span>
+            )}
           </div>
           <h1 className="text-2xl font-bold text-glass mt-1 mb-4">{name}</h1>
 
+          {/* Variant names ticker */}
+          {hasVariants && variantNames.length > 0 && (
+            <div className="mb-4 overflow-hidden rounded-lg px-3 py-2" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+              <div className="animate-marquee whitespace-nowrap text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                <span className="font-medium mr-2" style={{ color: 'rgba(255,255,255,0.7)' }}>
+                  <Package size={12} className="inline mr-1" />
+                  {locale === 'th' ? 'ตัวเลือก:' : 'Options:'}
+                </span>
+                {variantNames.join('  •  ')}
+                {'  •  '}
+                {variantNames.join('  •  ')}
+              </div>
+            </div>
+          )}
+
+          {/* Variant selector */}
+          {hasVariants && (
+            <div className="mb-5">
+              <h3 className="text-sm font-semibold text-glass mb-3">
+                {locale === 'th' ? 'เลือกตัวเลือกสินค้า' : 'Select option'}
+              </h3>
+              <div className="space-y-2">
+                {variants.map((v) => {
+                  const vName = v.variant_label || (locale === 'th' ? v.name_th : v.name_en)
+                  const isSelected = selectedVariant?.id === v.id
+                  return (
+                    <button
+                      key={v.id}
+                      onClick={() => { setSelectedVariant(v); setQuantity(1) }}
+                      className={`w-full text-left px-4 py-3 rounded-xl border transition-all flex items-start ${
+                        isSelected
+                          ? 'border-racing-500 bg-racing-500/10 text-white'
+                          : 'border-white/10 hover:border-white/20 text-glass-secondary'
+                      }`}
+                    >
+                      <div className="flex-1 min-w-0">
+                        <span className="text-sm font-medium block">{vName}</span>
+                        <div className="flex items-center gap-3 text-xs text-glass-muted mt-0.5">
+                          <span>{v.sku}</span>
+                          {v.stock > 0 ? (
+                            <span style={{ color: '#00d4ff' }}>
+                              {locale === 'th' ? `สต็อก: ${v.stock} ชิ้น` : `Stock: ${v.stock}`}
+                            </span>
+                          ) : (
+                            <span style={{ color: '#ff3366' }}>
+                              {locale === 'th' ? 'สินค้าหมด' : 'Out of stock'}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <span className={`text-base font-bold shrink-0 ml-3 ${isSelected ? 'text-racing-400' : 'text-glass'}`}>
+                        ฿{Number(v.price).toLocaleString()}
+                      </span>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Price */}
           <div className="flex items-baseline gap-3 mb-4">
             <span className="text-3xl font-bold" style={{ color: '#ff3366', textShadow: '0 0 15px rgba(255,51,102,0.3)' }}>
-              ฿{Number(product.price).toLocaleString()}
+              {priceDisplay}
             </span>
-            {product.compare_price && (
-              <span className="text-lg text-glass-muted line-through">฿{Number(product.compare_price).toLocaleString()}</span>
+            {activeProduct?.compare_price && (
+              <span className="text-lg text-glass-muted line-through">฿{Number(activeProduct.compare_price).toLocaleString()}</span>
             )}
           </div>
 
+          {/* Stock status */}
           <div className="flex items-center gap-2 mb-6">
-            {product.stock > 0 ? (
+            {hasVariants && !selectedVariant ? (
+              <span className="text-sm" style={{ color: '#ffc107' }}>
+                {locale === 'th' ? 'กรุณาเลือกตัวเลือกสินค้า' : 'Please select an option'}
+              </span>
+            ) : activeProduct?.stock && activeProduct.stock > 0 ? (
               <span className="flex items-center gap-1 text-sm" style={{ color: '#00d4ff' }}>
                 <Check size={16} /> {t('products.in_stock', locale)}
               </span>
@@ -152,6 +250,7 @@ export default function ProductDetailPage() {
             </div>
           )}
 
+          {/* Add to cart */}
           <div className="flex items-center gap-4 mb-6">
             <div className="flex items-center glass rounded-lg">
               <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="px-3 py-2 text-glass-muted hover:text-white">
@@ -164,9 +263,9 @@ export default function ProductDetailPage() {
             </div>
             <button
               onClick={handleAdd}
-              disabled={product.stock === 0}
+              disabled={!canAddToCart || (activeProduct ? activeProduct.stock === 0 : true)}
               className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-semibold transition-all ${
-                added ? 'bg-green-500 text-white' : product.stock > 0 ? 'btn-accent-glass' : 'opacity-30 cursor-not-allowed'
+                added ? 'bg-green-500 text-white' : canAddToCart && activeProduct && activeProduct.stock > 0 ? 'btn-accent-glass' : 'opacity-30 cursor-not-allowed'
               }`}
             >
               <ShoppingCart size={20} />

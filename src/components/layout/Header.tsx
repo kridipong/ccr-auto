@@ -21,10 +21,10 @@ export default function Header() {
           {/* Brand */}
           <Link href={`/${locale}`} className="flex items-center gap-1.5 shrink-0 group">
             <span className="font-black text-xl tracking-tight text-white">
-              CCR
+              เจริญยนต์
             </span>
-            <span className="font-black text-sm tracking-[0.15em] text-racing-500">
-              AUTO
+            <span className="font-black text-[11px] tracking-[0.1em] text-racing-500 mt-0.5">
+              เชียงราย
             </span>
           </Link>
 

@@ -8,6 +8,7 @@ import { createClient } from '@/lib/supabase/client'
 import type { Make, Model, Category, Brand, Product } from '@/lib/types'
 import ProductCard from '@/components/products/ProductCard'
 import { Search, SlidersHorizontal, X } from 'lucide-react'
+import { applySearch } from '@/lib/search-dictionary'
 
 const supabase = createClient()
 
@@ -20,6 +21,7 @@ export default function ProductsPage() {
   const [categories, setCategories] = useState<Category[]>([])
   const [brands, setBrands] = useState<Brand[]>([])
   const [products, setProducts] = useState<Product[]>([])
+  const [variantMap, setVariantMap] = useState<Record<string, Product[]>>({})
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [showFilters, setShowFilters] = useState(false)
@@ -53,11 +55,20 @@ export default function ProductsPage() {
 
   useEffect(() => {
     setLoading(true)
-    let query = supabase.from('products').select('*').eq('is_active', true)
+    let query = supabase.from('products').select('*').eq('is_active', true).is('parent_product_id', null)
 
     if (selectedCategory) query = query.eq('category_id', selectedCategory)
     if (selectedBrand) query = query.eq('brand_id', selectedBrand)
-    if (search) query = query.or(`name_th.ilike.%${search}%,name_en.ilike.%${search}%,sku.ilike.%${search}%`)
+    if (search) {
+      applySearch(query, search)
+    }
+
+    const processResults = (data: Product[]) => {
+      // Filter to only parent/standalone products (parent_product_id column not yet in DB)
+      const filtered = data.filter(p => !p.parent_product_id)
+      setProducts(filtered)
+      setLoading(false)
+    }
 
     if (selectedMake || selectedModel) {
       let fitQuery = supabase.from('product_fitments').select('product_id')
@@ -67,8 +78,15 @@ export default function ProductsPage() {
         if (fitData && fitData.length > 0) {
           const ids = [...new Set(fitData.map(f => f.product_id))]
           query.in('id', ids).then(({ data }) => {
-            if (data) setProducts(data)
-            setLoading(false)
+            if (data) processResults(data)
+            else setLoading(false)
+          })
+        } else if (selectedMake && !selectedModel) {
+          // Fallback: search product names for the make name
+          const makeName = makes.find(m => m.id === selectedMake)?.name_en || ''
+          query.or(`name_en.ilike.%${makeName}%,name_th.ilike.%${makeName}%`).order('created_at', { ascending: false }).limit(50).then(({ data }) => {
+            if (data) processResults(data)
+            else setLoading(false)
           })
         } else {
           setProducts([])
@@ -79,10 +97,28 @@ export default function ProductsPage() {
     }
 
     query.order('created_at', { ascending: false }).limit(50).then(({ data }) => {
-      if (data) setProducts(data)
-      setLoading(false)
+      if (data) processResults(data)
+      else setLoading(false)
     })
-  }, [selectedMake, selectedModel, selectedCategory, search])
+  }, [selectedMake, selectedModel, selectedCategory, selectedBrand, search])
+
+  // Fetch variants for parent products
+  useEffect(() => {
+    const parentIds = products.filter(p => !p.parent_product_id).map(p => p.id)
+    if (parentIds.length === 0) { setVariantMap({}); return }
+    supabase.from('products').select('*').in('parent_product_id', parentIds).eq('is_active', true).then(({ data: vars }) => {
+      if (vars) {
+        const map: Record<string, Product[]> = {}
+        vars.forEach(v => {
+          if (v.parent_product_id) {
+            if (!map[v.parent_product_id]) map[v.parent_product_id] = []
+            map[v.parent_product_id].push(v)
+          }
+        })
+        setVariantMap(map)
+      }
+    })
+  }, [products])
 
   const clearFilters = () => {
     setSelectedMake(''); setSelectedModel(''); setSelectedCategory(''); setSelectedBrand(''); setSearch('')
@@ -135,10 +171,10 @@ export default function ProductsPage() {
               </select>
             </div>
             <div>
-              <label className="text-xs text-glass-secondary mb-1 block">{t('vehicle.model', locale)}</label>
+              <label className="text-xs text-glass-secondary mb-1 block">{t('vehicle.model', locale)} <span className="opacity-50">({locale === 'th' ? 'ไม่จำเป็น' : 'optional'})</span></label>
               <select value={selectedModel} onChange={(e) => setSelectedModel(e.target.value)}
                 className="glass-input w-full" disabled={!selectedMake}>
-                <option value="">-- {t('vehicle.model', locale)} --</option>
+                <option value="">-- {locale === 'th' ? 'ทั้งหมด' : 'All Models'} --</option>
                 {models.map((m) => (
                   <option key={m.id} value={m.id}>{m.name} ({m.year_start}{m.year_end ? `-${m.year_end}` : '+'})</option>
                 ))}
@@ -180,7 +216,7 @@ export default function ProductsPage() {
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} locale={locale} />
+            <ProductCard key={product.id} product={product} locale={locale} variants={variantMap[product.id] || []} />
           ))}
         </div>
       )}

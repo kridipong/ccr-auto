@@ -2,8 +2,35 @@
 
 import { useLocale } from '@/lib/i18n/locale-provider'
 import { t } from '@/lib/i18n'
-import { Phone, Mail, MapPin, Clock } from 'lucide-react'
+import { Phone, MapPin, MessageSquare } from 'lucide-react'
 import Link from 'next/link'
+
+const branches = [
+  {
+    name: 'เจริญยนต์เชียงราย',
+    sub: 'สาขาฝั่งหมิ่น — ถ.พหลโยธิน',
+    address_th: '227/1 ถ.พหลโยธิน, เชียงราย',
+    address_en: '227/1 Phaholyothin Rd, Chiang Rai',
+    phone: '053 166 989',
+    maps: 'https://maps.google.com/?q=227/1+ถ.พหลโยธิน+เชียงราย',
+  },
+  {
+    name: 'เจริญยนต์ 2002 / ซีซีอาร์ ออโต้',
+    sub: 'สาขาป่าก่อ — ถ.พหลโยธิน',
+    address_th: '209/2-4 ถ.พหลโยธิน, เชียงราย',
+    address_en: '209/2-4 Phaholyothin Rd, Chiang Rai',
+    phone: '053 719 531',
+    maps: 'https://maps.app.goo.gl/zC3TiTvqYXZNQKPc8',
+  },
+  {
+    name: 'เจริญยนต์แม่สาย',
+    sub: 'สาขาแม่สาย — เวียงพางคำ',
+    address_th: 'เวียงพางคำ อ.แม่สาย, เชียงราย',
+    address_en: 'Wiang Phang Kham, Mae Sai, Chiang Rai',
+    phone: '053 646 465',
+    maps: 'https://maps.app.goo.gl/XUBKunb1EPC9B27X7',
+  },
+]
 
 export default function Footer() {
   const { locale } = useLocale()
@@ -15,89 +42,79 @@ export default function Footer() {
           {/* Brand */}
           <div className="md:col-span-1">
             <Link href={`/${locale}`} className="flex items-center gap-1.5 mb-4">
-              <span className="font-black text-xl tracking-tight text-white">CCR</span>
-              <span className="font-black text-sm tracking-[0.15em] text-racing-500">AUTO</span>
+              <span className="font-black text-xl tracking-tight text-white">เจริญยนต์</span>
+              <span className="font-black text-[11px] tracking-[0.1em] text-racing-500 mt-0.5">เชียงราย</span>
             </Link>
             <p className="text-sm text-silver-500 leading-relaxed">
               {locale === 'th'
-                ? 'ศูนย์รวมอะไหล่รถยนต์คุณภาพสูง ราคายุติธรรม จัดส่งทั่วประเทศ'
-                : 'Your trusted source for quality auto parts. Fast delivery nationwide.'}
+                ? 'ผู้เชี่ยวชาญอะไหล่รถยนต์ มากว่า 50 ปี 3 สาขาทั่วเชียงราย อะไหล่แท้และเทียบคุณภาพสูง ราคายุติธรรม'
+                : 'Auto parts expert with 50+ years of experience. 3 branches across Chiang Rai. Quality parts, fair prices.'}
             </p>
-          </div>
-
-          {/* Menu */}
-          <div>
-            <h4 className="font-bold text-sm uppercase tracking-widest mb-3 text-racing-400">
-              {locale === 'th' ? 'เมนู' : 'Quick Links'}
-            </h4>
-            <div className="space-y-2 text-sm">
-              {[
-                { href: `/${locale}`, label: t('nav.home', locale) },
-                { href: `/${locale}/products`, label: t('nav.products', locale) },
-                { href: `/${locale}/cart`, label: t('nav.cart', locale) },
-              ].map((link) => (
-                <Link key={link.href} href={link.href}
-                  className="block text-silver-400 hover:text-white transition-all hover:translate-x-1"
-                >
-                  {link.label}
-                </Link>
-              ))}
+            <div className="mt-4">
+              <a
+                href="https://line.me/R/ti/p/@ccrauto2009"
+                target="_blank"
+                rel="noopener"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#06c755]/10 hover:bg-[#06c755]/20 border border-[#06c755]/30 transition-all text-sm"
+              >
+                <MessageSquare size={16} className="text-[#06c755]" />
+                <span className="text-[#06c755] font-bold">LINE: @ccrauto2009</span>
+              </a>
             </div>
           </div>
 
-          {/* Contact */}
-          <div>
-            <h4 className="font-bold text-sm uppercase tracking-widest mb-3 text-racing-400">
-              {t('footer.contact', locale)}
-            </h4>
-            <div className="space-y-3 text-sm">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-racing-900/30">
-                  <Phone size={14} className="text-racing-400" />
+          {/* Branches - takes 3 columns on desktop */}
+          <div className="md:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-6">
+            {branches.map((b, i) => (
+              <div key={i} className="bg-graphite-800 rounded-xl p-5 border border-graphite-700 hover:border-racing-600/30 transition-all">
+                <div className="flex items-center gap-2.5 mb-3">
+                  <span className="w-7 h-7 rounded-full bg-racing-600 flex items-center justify-center text-white font-bold text-xs">
+                    {i + 1}
+                  </span>
+                  <div>
+                    <h4 className="font-bold text-sm text-white">{b.name}</h4>
+                    <p className="text-[10px] text-silver-500">{locale === 'th' ? b.sub : `Branch ${i + 1}`}</p>
+                  </div>
                 </div>
-                <span className="text-silver-400">055-009-204</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-racing-900/30">
-                  <Mail size={14} className="text-racing-400" />
+                <div className="space-y-2 text-silver-400 text-xs">
+                  <a
+                    href={b.maps}
+                    target="_blank"
+                    rel="noopener"
+                    className="flex items-start gap-1.5 hover:text-white transition-colors group"
+                  >
+                    <MapPin size={13} className="mt-0.5 shrink-0 text-racing-400" />
+                    <span className="group-hover:text-white transition-colors">
+                      {locale === 'th' ? b.address_th : b.address_en}
+                    </span>
+                  </a>
+                  <a
+                    href={`tel:${b.phone.replace(/\s/g, '')}`}
+                    className="flex items-center gap-1.5 hover:text-white transition-colors"
+                  >
+                    <Phone size={13} className="shrink-0 text-racing-400" />
+                    <span>{b.phone}</span>
+                  </a>
                 </div>
-                <span className="text-silver-400">info@ccrauto.com</span>
               </div>
-              <div className="flex items-start gap-2">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 bg-silver-900/20">
-                  <MapPin size={14} className="text-silver-400" />
-                </div>
-                <span className="text-silver-500 text-xs leading-relaxed">
-                  {locale === 'th'
-                    ? '111/12 หมู่5 ต.บ้านคลอง อ.เมือง จ.พิษณุโลก 65000'
-                    : '111/12 Moo 5, Ban Klong, Muang, Phitsanulok 65000'}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Hours */}
-          <div>
-            <h4 className="font-bold text-sm uppercase tracking-widest mb-3 text-racing-400">
-              {locale === 'th' ? 'เวลาทำการ' : 'Business Hours'}
-            </h4>
-            <div className="flex items-center gap-2 text-sm">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-racing-900/30">
-                <Clock size={14} className="text-racing-400" />
-              </div>
-              <span className="text-silver-400">{t('footer.hours', locale)}</span>
-            </div>
-            <div className="mt-4 pt-4 border-t border-graphite-700">
-              <p className="text-xs text-silver-500">LINE: @ccrauto</p>
-            </div>
+            ))}
           </div>
         </div>
 
-        {/* Bottom bar */}
-        <div className="mt-8 pt-6 text-center text-xs text-silver-600 border-t border-graphite-800">
-          &copy; {new Date().getFullYear()} CCRAUTO.
-          <span className="mx-2 opacity-30">|</span>
-          {locale === 'th' ? 'บริษัท ซีซีอาร์ออโต้ จำกัด' : 'CCRAUTO CO., LTD.'}
+        {/* Separator */}
+        <div className="mt-8 pt-6 border-t border-graphite-800">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-2 text-xs text-silver-600">
+            <p>
+              &copy; {new Date().getFullYear()} เจริญยนต์ เชียงราย.
+              <span className="mx-2 opacity-30">|</span>
+              {locale === 'th' ? 'ร้านอะไหล่รถยนต์ครบวงจร' : 'Full-service auto parts retailer'}
+            </p>
+            <p className="text-center">
+              {locale === 'th'
+                ? 'มากว่า 50 ปี • 3 สาขาทั่วเชียงราย'
+                : '50+ years • 3 branches across Chiang Rai'}
+            </p>
+          </div>
         </div>
       </div>
     </footer>

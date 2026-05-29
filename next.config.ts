@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  turbopack: false, // webpack — required for cloudflared tunnel (Turbopack chunks fail through proxy)
 };
 
 export default nextConfig;

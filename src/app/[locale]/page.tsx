@@ -19,6 +19,7 @@ export default function HomePage() {
   const [selectedModel, setSelectedModel] = useState('')
   const [brands, setBrands] = useState<Brand[]>([])
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([])
+  const [featuredVariantMap, setFeaturedVariantMap] = useState<Record<string, Product[]>>({})
 
   useEffect(() => {
     supabase.from('makes').select('*').order('name_en').then(({ data }) => {
@@ -27,8 +28,24 @@ export default function HomePage() {
     supabase.from('brands').select('*').order('name_en').then(({ data }) => {
       if (data) setBrands(data)
     })
-    supabase.from('products').select('*').eq('is_active', true).limit(8).then(({ data }) => {
-      if (data) setFeaturedProducts(data)
+    supabase.from('products').select('*').eq('is_active', true).is('parent_product_id', null).limit(8).then(({ data }) => {
+      if (data) {
+        setFeaturedProducts(data)
+        // Fetch variants for featured products
+        const parentIds = data.map(p => p.id)
+        supabase.from('products').select('*').in('parent_product_id', parentIds).eq('is_active', true).then(({ data: vars }) => {
+          if (vars) {
+            const map: Record<string, Product[]> = {}
+            vars.forEach(v => {
+              if (v.parent_product_id) {
+                if (!map[v.parent_product_id]) map[v.parent_product_id] = []
+                map[v.parent_product_id].push(v)
+              }
+            })
+            setFeaturedVariantMap(map)
+          }
+        })
+      }
     })
   }, [])
 
@@ -49,7 +66,7 @@ export default function HomePage() {
       {/* ════════════════════════════════════════════════
           HERO — Automotive Industrial
           ════════════════════════════════════════════════ */}
-      <section className="relative bg-graphite-900 pt-16 pb-6 md:pt-24 md:pb-8 overflow-hidden">
+      <section className="relative bg-graphite-900 pt-16 pb-6 md:pt-24 md:pb-8 overflow-hidden bg-image-overlay">
         {/* Grid pattern */}
         <div className="absolute inset-0 opacity-[0.04] pointer-events-none"
           style={{
@@ -71,10 +88,10 @@ export default function HomePage() {
               </span>
             </div>
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white leading-[0.9] tracking-tight mb-1">
-              CCR
+              เจริญยนต์
             </h1>
             <p className="text-racing-400 text-xl md:text-2xl font-black tracking-[0.15em] mb-2">
-              AUTO
+              เชียงราย
             </p>
             <p className="text-silver-500 text-base max-w-lg mx-auto">
               {locale === 'th'
@@ -175,7 +192,7 @@ export default function HomePage() {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {featuredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} locale={locale} />
+              <ProductCard key={product.id} product={product} locale={locale} variants={featuredVariantMap[product.id] || []} />
             ))}
           </div>
         </section>
@@ -203,22 +220,19 @@ export default function HomePage() {
                 <Link
                   key={b.id}
                   href={`/${locale}/products?brand=${b.id}`}
-                  className="bg-white rounded-xl px-6 py-5 border border-silver-200 transition-all hover:border-racing-400/40 hover:-translate-y-1 hover:shadow-md flex flex-col items-center gap-3 min-w-[120px] group"
+                  className="bg-white rounded-xl px-6 py-5 border border-silver-200 transition-all hover:border-racing-400/40 hover:-translate-y-1 hover:shadow-md flex items-center justify-center min-w-[140px] min-h-[100px] group"
                 >
                   {b.logo_url ? (
                     <img
                       src={b.logo_url}
                       alt={b.name_en}
-                      className="h-12 w-auto object-contain group-hover:scale-110 transition-transform duration-300"
+                      className="h-16 w-auto object-contain group-hover:scale-110 transition-transform duration-300"
                     />
                   ) : (
-                    <div className="h-12 w-12 rounded-full flex items-center justify-center text-lg font-bold bg-racing-50 text-racing-600">
+                    <div className="h-16 w-16 rounded-full flex items-center justify-center text-xl font-bold bg-racing-50 text-racing-600">
                       {b.name_en?.charAt(0)}
                     </div>
                   )}
-                  <span className="text-xs text-silver-600 font-medium group-hover:text-graphite-900 transition-colors">
-                    {locale === 'th' ? (b.name_th || b.name_en) : b.name_en}
-                  </span>
                 </Link>
               ))}
             </div>

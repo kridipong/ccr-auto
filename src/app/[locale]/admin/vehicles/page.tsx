@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react'
 import { useLocale } from '@/lib/i18n/locale-provider'
 import { createClient } from '@/lib/supabase/client'
 import type { Make, Model } from '@/lib/types'
-import { Plus, Trash2, ChevronDown, ChevronRight } from 'lucide-react'
+import { Plus, Trash2, ChevronDown, ChevronRight, Upload } from 'lucide-react'
+import Link from 'next/link'
 
 const supabase = createClient()
 
@@ -69,6 +70,11 @@ export default function AdminVehicles() {
       {/* Makes */}
       <div>
         <h2 className="font-semibold text-gray-700 mb-3">{locale === 'th' ? 'ยี่ห้อรถ' : 'Makes'}</h2>
+        <div className="flex items-center gap-2 mb-4">
+          <Link href={`/${locale}/admin/vehicles/import`} className="flex items-center gap-1 text-xs px-3 py-1.5 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors">
+            <Upload size={12} /> {locale === 'th' ? 'นำเข้า Excel' : 'Import Excel'}
+          </Link>
+        </div>
         <div className="flex gap-2 mb-4">
           <input type="text" placeholder={locale === 'th' ? 'ชื่อไทย' : 'Thai name'} value={newMake.name_th}
             onChange={(e) => setNewMake({ ...newMake, name_th: e.target.value })}
@@ -119,6 +125,11 @@ export default function AdminVehicles() {
       {/* Categories */}
       <div>
         <h2 className="font-semibold text-gray-700 mb-3">{locale === 'th' ? 'หมวดหมู่' : 'Categories'}</h2>
+        <div className="flex items-center gap-2 mb-4">
+          <Link href={`/${locale}/admin/categories/import`} className="flex items-center gap-1 text-xs px-3 py-1.5 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors">
+            <Upload size={12} /> {locale === 'th' ? 'นำเข้า Excel' : 'Import Excel'}
+          </Link>
+        </div>
         <CategoriesManager />
       </div>
     </div>

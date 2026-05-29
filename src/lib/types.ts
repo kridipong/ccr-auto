@@ -48,6 +48,8 @@ export interface Product {
   brand_id: string | null
   images: string[]
   is_active: boolean
+  parent_product_id: string | null
+  variant_label: string | null
   created_at: string
   updated_at: string
 }

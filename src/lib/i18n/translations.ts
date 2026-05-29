@@ -59,7 +59,7 @@ export const en = {
   'checkout.bank_info': 'Bank Transfer Information',
   'checkout.bank_name': 'Kasikorn Bank (KBank)',
   'checkout.bank_account': 'Account Number: xxx-x-xxxxx-x',
-  'checkout.bank_holder': 'Account Name: CCRAUTO CO., LTD.',
+  'checkout.bank_holder': 'Account Name: เจริญยนต์',
   'checkout.upload_slip': 'Upload Payment Slip',
   
   // Admin
